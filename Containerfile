@@ -6,9 +6,7 @@ FROM cgr.dev/chainguard/rust:latest as build-helix
 COPY --chown=nonroot:nonroot --from=git /home/git/helix /home/nonroot/helix
 COPY bashrc /home/nonroot/.profile
 WORKDIR /home/nonroot/helix
-RUN cargo install --locked --path helix-term && \
-	/home/nonroot/bin/hx --grammar fetch && \
-	/home/nonroot/bin/hx --grammar build
+RUN cargo install --locked --path helix-term
 
 FROM cgr.dev/chainguard/rust:latest as build-zellij
 RUN cargo install --locked zellij
@@ -22,5 +20,7 @@ COPY --chown=nonroot:nonroot --from=build-helix /home/nonroot/helix/runtime /hom
 #COPY --chown=nonroot:nonroot --from=build-zellij /home/nonroot/.cargo/bin/zellij /home/nonroot/bin/zellij
 COPY --chown=nonroot:nonroot bashrc /home/nonroot/.bashrc
 WORKDIR /home/nonroot
+RUN	/home/nonroot/bin/hx --grammar fetch && \
+	/home/nonroot/bin/hx --grammar build
 ENTRYPOINT ["/home/nonroot/bin/hx"]
 
